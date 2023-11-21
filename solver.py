@@ -118,6 +118,47 @@ def create_variables(boardstr, words):
                             length += 1
                         else:
                             break
+                    if length == 1:
+                        cond = False
+                        if col == 0 and row == 0:
+                            if board[row][col + 1] == "#" and board[row + 1][col] == "#":
+                                cond = True
+                        elif col == 0 and row == len(board) - 1:
+                            if board[row][col + 1] == "#" and board[row - 1][col] == "#":
+                                cond = True
+                        elif col == len(board[row]) - 1 and row == 0:
+                            if board[row][col - 1] == "#" and board[row + 1][col] == "#":
+                                cond = True
+                        elif col == len(board[row]) - 1 and row == len(board) - 1:
+                            if board[row][col - 1] == "#" and board[row - 1][col] == "#":
+                                cond = True
+                        elif col == 0:
+                            if board[row][col + 1] == "#" and board[row + 1][col] == "#" and board[row - 1][col] == "#":
+                                cond = True
+                        elif col == len(board[row]) - 1:
+                            if board[row][col - 1] == "#" and board[row + 1][col] == "#" and board[row - 1][col] == "#":
+                                cond = True
+                        elif row == 0:
+                            if board[row][col + 1] == "#" and board[row][col - 1] == "#" and board[row + 1][col] == "#":
+                                cond = True
+                        elif row == len(board) - 1:
+                            if board[row][col + 1] == "#" and board[row][col - 1] == "#" and board[row - 1][col] == "#":
+                                cond = True
+                        else:
+                            if board[row][col + 1] == "#" and board[row][col - 1] == "#" and board[row + 1][col] == "#" and board[row - 1][col] == "#":
+                                cond = True
+                        if cond:
+                            domain = []
+                            for word in words:
+                                if len(word) == length:
+                                    domain.append(word)
+                            variables.append(Variable(
+                                "horizontal",
+                                row,
+                                col,
+                                length,
+                                domain
+                            ))
                     if length > 1:
                         domain = []
                         for word in words:
