@@ -6,6 +6,7 @@ class Variable:
         self.col = col
         self.length = length
         self.domain = domain
+        self.removed_domain = {}
 
 
 def print_board(boardstr, assignment):
@@ -34,7 +35,38 @@ def satisfy_constraint(V, assignment, Vx, val):
 
 
 def select_unassigned_variable(V, assignment):
-    return next(v for v in V if v not in assignment)
+    unassigned = []
+    for v in V:
+        if v not in assignment:
+            unassigned.append(v)
+
+    unassigned.sort(key=lambda x: len(x.domain))
+    return unassigned[0]
+
+
+def reduce_domain(V, assignment, Vx, val):
+    for v in V:
+        if v != Vx and v not in assignment:
+            Cxv = create_constraint(Vx, v)
+            for constraint in Cxv:
+                for word in v.domain:
+                    if val[constraint[0]] != word[constraint[1]]:
+                        v.domain.remove(word)
+                        if v not in Vx.removed_domain:
+                            Vx.removed_domain[v] = []
+                        Vx.removed_domain[v].append(word)
+
+
+def restore_domain(V, assignment, Vx, val):
+    for v in V:
+        if v != Vx and v not in assignment:
+            Cxv = create_constraint(Vx, v)
+            if v in Vx.removed_domain:
+                for constraint in Cxv:
+                    for word in Vx.removed_domain[v]:
+                        if val[constraint[0]] != word[constraint[1]]:
+                            v.domain.append(word)
+                            Vx.removed_domain[v].remove(word)
 
 
 def backtrack(V, assignment):
@@ -46,10 +78,12 @@ def backtrack(V, assignment):
             continue
         if satisfy_constraint(V, assignment, Vx, val):
             assignment[Vx] = val
+            reduce_domain(V, assignment, Vx, val)
             result = backtrack(V, assignment)
             if result:
                 return True
         assignment.pop(Vx, None)
+        restore_domain(V, assignment, Vx, val)
     return False
 
 
@@ -119,34 +153,27 @@ def create_variables(boardstr, words):
                         else:
                             break
                     if length == 1:
-                        cond = False
-                        if col == 0 and row == 0:
-                            if board[row][col + 1] == "#" and board[row + 1][col] == "#":
-                                cond = True
-                        elif col == 0 and row == len(board) - 1:
-                            if board[row][col + 1] == "#" and board[row - 1][col] == "#":
-                                cond = True
-                        elif col == len(board[row]) - 1 and row == 0:
-                            if board[row][col - 1] == "#" and board[row + 1][col] == "#":
-                                cond = True
-                        elif col == len(board[row]) - 1 and row == len(board) - 1:
-                            if board[row][col - 1] == "#" and board[row - 1][col] == "#":
-                                cond = True
-                        elif col == 0:
-                            if board[row][col + 1] == "#" and board[row + 1][col] == "#" and board[row - 1][col] == "#":
-                                cond = True
-                        elif col == len(board[row]) - 1:
-                            if board[row][col - 1] == "#" and board[row + 1][col] == "#" and board[row - 1][col] == "#":
-                                cond = True
-                        elif row == 0:
-                            if board[row][col + 1] == "#" and board[row][col - 1] == "#" and board[row + 1][col] == "#":
-                                cond = True
-                        elif row == len(board) - 1:
-                            if board[row][col + 1] == "#" and board[row][col - 1] == "#" and board[row - 1][col] == "#":
-                                cond = True
-                        else:
-                            if board[row][col + 1] == "#" and board[row][col - 1] == "#" and board[row + 1][col] == "#" and board[row - 1][col] == "#":
-                                cond = True
+                        cond = True
+                        try:
+                            if board[row][col + 1] == "-":
+                                cond = False
+                        except IndexError:
+                            pass
+                        try:
+                            if board[row][col - 1] == "-" and col - 1 >= 0:
+                                cond = False
+                        except IndexError:
+                            pass
+                        try:
+                            if board[row - 1][col] == "-" and row - 1 >= 0:
+                                cond = False
+                        except IndexError:
+                            pass
+                        try:
+                            if board[row + 1][col] == "-":
+                                cond = False
+                        except IndexError:
+                            pass
                         if cond:
                             domain = []
                             for word in words:
@@ -159,6 +186,7 @@ def create_variables(boardstr, words):
                                 length,
                                 domain
                             ))
+
                     if length > 1:
                         domain = []
                         for word in words:
