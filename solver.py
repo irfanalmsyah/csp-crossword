@@ -82,23 +82,22 @@ def create_constraint(Vx, Vy):
     constraints = []
     if Vx.direction != Vy.direction:
         if Vx.direction == "horizontal":
-            if Vy.col >= Vx.col and Vy.col <= Vx.col + Vx.length:
-                if Vx.row >= Vy.row and Vx.row <= Vy.row + Vy.length:
+            if Vy.col >= Vx.col and Vy.col <= Vx.col + Vx.length - 1:
+                if Vx.row >= Vy.row and Vx.row <= Vy.row + Vy.length - 1:
                     constraint = (Vy.col - Vx.col, Vx.row - Vy.row)
                     constraints.append(constraint)
         else:
-            if Vy.row >= Vx.row and Vy.row <= Vx.row + Vx.length:
-                if Vx.col >= Vy.col and Vx.col <= Vy.col + Vy.length:
+            if Vy.row >= Vx.row and Vy.row <= Vx.row + Vx.length - 1:
+                if Vx.col >= Vy.col and Vx.col <= Vy.col + Vy.length - 1:
                     constraint = (Vy.row - Vx.row, Vx.col - Vy.col)
                     constraints.append(constraint)
-
     return constraints
 
 
 def create_arc(V):
     arcs = []
     for i in range(len(V)):
-        for j in range(len(V)):
+        for j in range(i + 1, len(V)):
             if i != j:
                 Cij = create_constraint(V[i], V[j])
                 if len(Cij) > 0:
@@ -162,6 +161,8 @@ def main():
     assignment = {}
     boardstr = read_file("crossword.txt")
     words = read_file("words.txt").splitlines()
+    words = [word.upper() for word in words]
+
     V = create_variables(boardstr, words)
     S = create_arc(V)
 
