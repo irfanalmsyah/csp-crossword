@@ -1,11 +1,14 @@
 import random
 import time
+import copy
 from solver import *
 
 TIME_LIMIT_SECONDS = 5
 
+
 def elapsed_time(start_time):
     return time.time() - start_time
+
 
 def backtrack(V, assignment, start_time):
     if elapsed_time(start_time) >= TIME_LIMIT_SECONDS:
@@ -24,21 +27,26 @@ def backtrack(V, assignment, start_time):
         assignment.pop(Vx, None)
     return False
 
+
 def generate_crossword_board(height, width):
     board = [['#' for _ in range(width)] for _ in range(height)]
     return board
+
 
 def place_word_horizontally(board, length, i, j):
     for k in range(length):
         board[i][j+k] = '-'
 
+
 def place_word_vertically(board, length, i, j):
     for k in range(length):
         board[i+k][j] = '-'
 
+
 def print_crossword_board(board):
     for row in board:
         print(''.join(row))
+
 
 def get_final_board(boardstr, assignment):
     final_board = []
@@ -56,6 +64,7 @@ def get_final_board(boardstr, assignment):
         final_board.append(''.join(row))
     return final_board
 
+
 def get_temp_board(board):
     temp_board = ""
     for i, row in enumerate(board):
@@ -64,6 +73,7 @@ def get_temp_board(board):
         else:
             temp_board += ''.join(row) + "\n"
     return temp_board
+
 
 def has_consecutive_chars(lst, char, consecutive_count):
     count = 0
@@ -76,12 +86,14 @@ def has_consecutive_chars(lst, char, consecutive_count):
             count = 0
     return False
 
+
 def is_valid_placement(board, length, i, j, direction):
     if direction == "horizontal":
         return not has_consecutive_chars(board[i], '-', length)
     elif direction == "vertical":
         column = [board[x][j] for x in range(i, i + length)]
         return not has_consecutive_chars(column, '-', length)
+
 
 def is_solveable(board, words):
     assignment = {}
@@ -105,13 +117,15 @@ def is_solveable(board, words):
     else:
         return False
 
+
 def add_word_to_board(board, length, position):
-    max_attempts = 10 
+    max_attempts = 10
     direction = "horizontal" if position % 2 == 0 else "vertical"
-    
+
     for _ in range(max_attempts):
-        i, j = random.choice([(x, y) for x in range(len(board)) for y in range(len(board[0]) - length + 1)]) if direction == "horizontal" else random.choice([(x, y) for x in range(len(board) - length + 1) for y in range(len(board[0]))])
-        
+        i, j = random.choice([(x, y) for x in range(len(board)) for y in range(len(board[0]) - length + 1)]
+                             ) if direction == "horizontal" else random.choice([(x, y) for x in range(len(board) - length + 1) for y in range(len(board[0]))])
+
         if is_valid_placement(board, length, i, j, direction):
             if direction == "horizontal":
                 place_word_horizontally(board, length, i, j)
@@ -119,19 +133,34 @@ def add_word_to_board(board, length, position):
                 place_word_vertically(board, length, i, j)
             break
 
+
+def save_board(board):
+    with open("crossword.txt", "w") as file:
+        for row in board:
+            if row == board[-1]:
+                file.write("".join(row))
+            else:
+                file.write("".join(row) + "\n")
+
+
 if __name__ == "__main__":
     height = 10
     width = 10
-    count = 0
-    
-    crossword_board = generate_crossword_board(height, width)
-    add_word_to_board(crossword_board, 4, height)
-    
+
+    testing_board = generate_crossword_board(height, width)
+    final_board = copy.deepcopy(testing_board)  # The board that will be saved
+    add_word_to_board(testing_board, 4, height)
+
     while True:
         word_length = random.randint(4, 6)
-        choice = random.randint(1, 2) # vertical or horizontal
-        add_word_to_board(crossword_board, word_length, choice)
-        if not is_solveable(crossword_board, read_file("words.txt").splitlines()):
+        choice = random.randint(1, 2)  # vertical or horizontal
+        final_board = copy.deepcopy(testing_board)
+        add_word_to_board(testing_board, word_length, choice)
+        
+        # If the board is not solveable, revert back to the old board
+        if not is_solveable(testing_board, read_file("words.txt").splitlines()):
+            save_board(final_board)
             break
+        
     print("Final board:")
-    print_crossword_board(crossword_board)
+    print_crossword_board(final_board)
