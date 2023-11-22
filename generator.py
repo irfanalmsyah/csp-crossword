@@ -136,11 +136,11 @@ def add_word_to_board(board, length, position):
 
 def save_board(board):
     with open("crossword.txt", "w") as file:
-        for row in board:
-            if row == board[-1]:
-                file.write("".join(row))
-            else:
-                file.write("".join(row) + "\n")
+        for i, row in enumerate(board):
+            file.write("".join(row))
+            if i < len(board) - 1:
+                file.write("\n")
+
 
 
 if __name__ == "__main__":
