@@ -26,11 +26,10 @@ def print_board(boardstr, assignment):
 
 def satisfy_constraint(V, assignment, Vx, val):
     for v in V:
-        if v != Vx and v in assignment:
-            Cxv = create_constraint(Vx, v)
-            for constraint in Cxv:
-                if val[constraint[0]] != assignment[v][constraint[1]]:
-                    return False
+        Cxv = create_constraint(Vx, v)
+        if v != Vx and v in assignment and Cxv:
+            if val[Cxv[0]] != assignment[v][Cxv[1]]:
+                return False
     return True
 
 
@@ -46,27 +45,25 @@ def select_unassigned_variable(V, assignment):
 
 def reduce_domain(V, assignment, Vx, val):
     for v in V:
-        if v != Vx and v not in assignment:
-            Cxv = create_constraint(Vx, v)
-            for constraint in Cxv:
-                for word in v.domain:
-                    if val[constraint[0]] != word[constraint[1]]:
-                        v.domain.remove(word)
-                        if v not in Vx.removed_domain:
-                            Vx.removed_domain[v] = []
-                        Vx.removed_domain[v].append(word)
+        Cxv = create_constraint(Vx, v)
+        if v != Vx and v not in assignment and Cxv:
+            for word in v.domain:
+                if val[Cxv[0]] != word[Cxv[1]]:
+                    v.domain.remove(word)
+                    if v not in Vx.removed_domain:
+                        Vx.removed_domain[v] = []
+                    Vx.removed_domain[v].append(word)
 
 
 def restore_domain(V, assignment, Vx, val):
     for v in V:
-        if v != Vx and v not in assignment:
-            Cxv = create_constraint(Vx, v)
+        Cxv = create_constraint(Vx, v)
+        if v != Vx and v not in assignment and Cxv:
             if v in Vx.removed_domain:
-                for constraint in Cxv:
-                    for word in Vx.removed_domain[v]:
-                        if val[constraint[0]] != word[constraint[1]]:
-                            v.domain.append(word)
-                            Vx.removed_domain[v].remove(word)
+                for word in Vx.removed_domain[v]:
+                    if val[Cxv[0]] != word[Cxv[1]]:
+                        v.domain.append(word)
+                        Vx.removed_domain[v].remove(word)
 
 
 def backtrack(V, assignment):
@@ -88,18 +85,17 @@ def backtrack(V, assignment):
 
 
 def revise(Vx, Vy, Cxy):
-    if len(Cxy) == 0:
+    if not Cxy:
         return False
     revised = False
     for x in Vx.domain:
         satisfied = False
         for y in Vy.domain:
-            for constraint in Cxy:
-                if x[constraint[0]] == y[constraint[1]]:
-                    satisfied = True
-                    break
-                if satisfied:
-                    break
+            if x[Cxy[0]] == y[Cxy[1]]:
+                satisfied = True
+                break
+            if satisfied:
+                break
         if not satisfied:
             Vx.domain.remove(x)
             revised = True
@@ -113,19 +109,17 @@ def arc_consistency_3(S):
 
 
 def create_constraint(Vx, Vy):
-    constraints = []
+    constraint = ()
     if Vx.direction != Vy.direction:
         if Vx.direction == "horizontal":
             if Vy.col >= Vx.col and Vy.col <= Vx.col + Vx.length - 1:
                 if Vx.row >= Vy.row and Vx.row <= Vy.row + Vy.length - 1:
                     constraint = (Vy.col - Vx.col, Vx.row - Vy.row)
-                    constraints.append(constraint)
         else:
             if Vy.row >= Vx.row and Vy.row <= Vx.row + Vx.length - 1:
                 if Vx.col >= Vy.col and Vx.col <= Vy.col + Vy.length - 1:
                     constraint = (Vy.row - Vx.row, Vx.col - Vy.col)
-                    constraints.append(constraint)
-    return constraints
+    return constraint
 
 
 def create_arc(V):
