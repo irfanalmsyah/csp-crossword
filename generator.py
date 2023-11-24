@@ -3,7 +3,7 @@ import time
 import copy
 from solver import *
 
-TIME_LIMIT_SECONDS = 5
+TIME_LIMIT_SECONDS = 1
 
 
 def elapsed_time(start_time):
@@ -142,10 +142,10 @@ def save_board(board):
                 file.write("\n")
 
 
-
 if __name__ == "__main__":
     height = 10
     width = 10
+    max_attempts = 10
 
     testing_board = generate_crossword_board(height, width)
     final_board = copy.deepcopy(testing_board)  # The board that will be saved
@@ -156,11 +156,19 @@ if __name__ == "__main__":
         choice = random.randint(1, 2)  # vertical or horizontal
         final_board = copy.deepcopy(testing_board)
         add_word_to_board(testing_board, word_length, choice)
-        
+
         # If the board is not solveable, revert back to the old board
         if not is_solveable(testing_board, read_file("words.txt").splitlines()):
-            save_board(final_board)
-            break
-        
+            # try adding the word for 10 times
+            for _ in range(max_attempts):
+                testing_board = copy.deepcopy(final_board)
+                add_word_to_board(testing_board, word_length, choice)
+                if is_solveable(testing_board, read_file("words.txt").splitlines()):
+                    break
+            else:
+                # Save the board and break the loop if not solveable after 5 attempts
+                save_board(final_board)
+                break
+
     print("Final board:")
     print_crossword_board(final_board)
