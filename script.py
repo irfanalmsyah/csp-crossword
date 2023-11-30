@@ -408,11 +408,16 @@ def generator(height, width):
     max_attempts = 10
 
     testing_board = generate_crossword_board(height, width)
-    final_board = copy.deepcopy(testing_board)  # The board that will be saved
-    add_word_to_board(testing_board, 4, height)
+    
+    #if board height and width is less than 3, then give a board with all -'s
+    if height < 3 and width < 3:
+        for i in range(height):
+            for j in range(width):
+                testing_board[i][j] = '-'
+        return testing_board
 
     while True:
-        word_length = random.randint(1, max(height, width))
+        word_length = random.randint(1, min(height, width))
         print("Trying to add a word...")
         choice = random.randint(1, 2)  # vertical or horizontal
         final_board = copy.deepcopy(testing_board)

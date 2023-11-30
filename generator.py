@@ -143,16 +143,24 @@ def save_board(board):
 
 
 if __name__ == "__main__":
-    height = 10
-    width = 10
+    height = 3
+    width = 4
     max_attempts = 10
 
     testing_board = generate_crossword_board(height, width)
-    final_board = copy.deepcopy(testing_board)  # The board that will be saved
-    add_word_to_board(testing_board, 4, height)
+    
+    #if board height and width is less than 3, then give a board with all -'s
+    if height <= 3 and width <= 3:
+        for i in range(height):
+            for j in range(width):
+                testing_board[i][j] = '-'
+        save_board(testing_board)
+        exit()
+        
 
     while True:
-        word_length = random.randint(4, 6)
+        # word_length = random.randint(4, 6)
+        word_length = min(height, width)
         choice = random.randint(1, 2)  # vertical or horizontal
         final_board = copy.deepcopy(testing_board)
         add_word_to_board(testing_board, word_length, choice)
