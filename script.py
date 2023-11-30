@@ -410,7 +410,7 @@ def generator(height, width):
     testing_board = generate_crossword_board(height, width)
     
     #if board height and width is less than 3, then give a board with all -'s
-    if height < 3 and width < 3:
+    if height <= 3 and width <= 3:
         for i in range(height):
             for j in range(width):
                 testing_board[i][j] = '-'
