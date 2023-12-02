@@ -3107,7 +3107,7 @@ youth
 zone
           </textarea>
         </div>
-          <button class="btn btn-primary" py-click="">Create</button>
+          <button class="btn btn-primary" onclick="create()">Create</button>
           <button class="btn btn-secondary" py-click="generate()">Generate</button>
           <button class="btn btn-success" py-click="solve()">Solve</button>
         </div>
@@ -3224,6 +3224,34 @@ zone
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+  <script>
+    function create() {
+      const table = document.getElementById("tableContainer");
+      table.innerHTML = "";
+      const totalRow = document.getElementById("totalRow").value;
+      const totalColumn = document.getElementById("totalColumn").value;
+
+      newTable = '<table>'
+      for (let i = 0; i < totalRow; i++) {
+        newTable += '<tr>'
+        for (let j = 0; j < totalColumn; j++) {
+          newTable += '<td class="black" style="width:50px;height:50px;" onclick="togglecell(this)">#</td>'
+        }
+        newTable += '</tr>'
+      }
+      newTable += '</table>'
+      table.innerHTML = newTable;
+    }
+    function togglecell(cell) {
+      if (cell.innerHTML == "#") {
+          cell.innerHTML = "-";
+          cell.className = "white";
+      } else {
+          cell.innerHTML = "#";
+          cell.className = "black";
+      }
+    }
+  </script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

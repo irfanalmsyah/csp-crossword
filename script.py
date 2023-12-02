@@ -13,8 +13,6 @@ input.style.display = ""
 wordlist = document.getElementById("word-list").value
 table = document.getElementById("tableContainer")
 
-# def create():
-
 
 def generate():
     table.innerHTML = ""
