@@ -41,6 +41,14 @@
     .off {
         background-color: #ccc;
     }
+
+    td.black {
+        background-color: #000;
+    }
+
+    td.white {
+        background-color: #fff;
+    }
 </style>
 </head>
 
@@ -86,14 +94,17 @@
         </div>
 
         <div id="input" style="display: none;">
-          <label for="totalRow">Total Rows:</label>
-          <input type="number" id="totalRow" min="1" value="3">
-      
-          <label for="totalColumn">Total Columns:</label>
-          <input type="number" id="totalColumn" min="1" value="3">
 
-          <label for="wordList">Word List:</label>
-          <textarea id="word-list" rows="4" cols="50">
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="totalRow">Total Rows:</label>
+            <input class="form-control" type="number" id="totalRow" min="1" value="3">
+      
+            <label class="input-group-text" for="totalColumn">Total Columns:</label>
+            <input class="form-control" type="number" id="totalColumn" min="1" value="3">
+          </div>
+          <div class="input-group mt-3">
+          <label class="input-group-text mb-4" for="wordList">Word List:</label>
+          <textarea class="form-control mb-4" id="word-list" rows="4" cols="50">
 a
 abandon
 ability
@@ -3095,42 +3106,13 @@ yourself
 youth
 zone
           </textarea>
-      
-          <button py-click="generate()">Generate</button>
-          <button py-click="solve()">Solve</button>
+        </div>
+          <button class="btn btn-primary" py-click="">Create</button>
+          <button class="btn btn-secondary" py-click="generate()">Generate</button>
+          <button class="btn btn-success" py-click="solve()">Solve</button>
         </div>
 
     <div id="tableContainer"></div>
-
-    <script>
-        function generateTable() {
-            document.getElementById("tableContainer").innerHTML = "";
-
-            var totalRow = document.getElementById("totalRow").value;
-            var totalColumn = document.getElementById("totalColumn").value;
-
-            var table = '<table>';
-            for (var i = 0; i < totalRow; i++) {
-                table += '<tr>';
-                for (var j = 0; j < totalColumn; j++) {
-                    table += '<td><button class="off" onclick="toggleCell(this)"></button></td>';
-                }
-                table += '</tr>';
-            }
-            table += '</table>';
-
-            document.getElementById("tableContainer").innerHTML = table;
-        }
-
-        function togglecell(cell) {
-            if (cell.innerHTML == "#") {
-                cell.innerHTML = "-";
-            } else {
-                cell.innerHTML = "#";
-            }
-        }
-
-    </script>
 
       </div>
     </section><!-- End Solver Section -->
