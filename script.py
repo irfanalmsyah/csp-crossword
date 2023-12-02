@@ -14,7 +14,7 @@ wordlist = document.getElementById("word-list").value
 table = document.getElementById("tableContainer")
 
 # def create():
-    
+
 
 def generate():
     table.innerHTML = ""
@@ -23,14 +23,6 @@ def generate():
     totalColumn = document.getElementById("totalColumn").value
 
     board = generator(int(totalRow), int(totalColumn))
-    newtable = '<table>'
-    for i in range(len(board)):
-        newtable += '<tr>'
-        for j in range(len(board[i])):
-            newtable += '<td style="width:50px;height:50px;" onclick="togglecell(this)">' + board[i][j] + '</td>'
-        newtable += '</tr>'
-    newtable += '</table>'
-    table.innerHTML = newtable
 
     newtable = '<table>'
     for i in range(len(board)):
@@ -42,7 +34,6 @@ def generate():
         newtable += '</tr>'
     newtable += '</table>'
     table.innerHTML = newtable
-
 
 
 def solve():
@@ -76,8 +67,6 @@ def solve():
         newtable += '</tr>'
     newtable += '</table>'
     table.innerHTML = newtable
-
-
 
 
 class Variable:
