@@ -21,11 +21,14 @@ def generate():
     totalColumn = document.getElementById("totalColumn").value
 
     board = generator(int(totalRow), int(totalColumn))
+
     newtable = '<table>'
     for i in range(len(board)):
         newtable += '<tr>'
         for j in range(len(board[i])):
-            newtable += '<td onclick="togglecell(this)">' + board[i][j] + '</td>'
+            cell_value = board[i][j]
+            cell_class = "black" if cell_value == "#" else "white"
+            newtable += '<td class="' + cell_class + '" style="width:50px;height:50px;" onclick="togglecell(this)">' + cell_value + '</td>'
         newtable += '</tr>'
     newtable += '</table>'
     table.innerHTML = newtable
@@ -56,7 +59,9 @@ def solve():
     for i in range(len(boardstr)):
         newtable += '<tr>'
         for j in range(len(boardstr[i])):
-            newtable += '<td onclick="togglecell(this)">' + boardstr[i][j] + '</td>'
+            cell_value = boardstr[i][j]
+            cell_class = "black" if cell_value == "#" else "white"
+            newtable += f'<td class="{cell_class}" style="width:50px;height:50px;" onclick="togglecell(this)">{cell_value}</td>'
         newtable += '</tr>'
     newtable += '</table>'
     table.innerHTML = newtable
