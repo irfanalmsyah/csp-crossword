@@ -143,9 +143,11 @@ def save_board(board):
 
 
 if __name__ == "__main__":
-    height = 3
-    width = 4
+    height = 15
+    width = 15
     max_attempts = 10
+
+    time_start = time.time()
 
     testing_board = generate_crossword_board(height, width)
     
@@ -159,8 +161,7 @@ if __name__ == "__main__":
         
 
     while True:
-        # word_length = random.randint(4, 6)
-        word_length = min(height, width)
+        word_length = random.randint(1, min(height, width))
         choice = random.randint(1, 2)  # vertical or horizontal
         final_board = copy.deepcopy(testing_board)
         add_word_to_board(testing_board, word_length, choice)
@@ -178,5 +179,7 @@ if __name__ == "__main__":
                 save_board(final_board)
                 break
 
+
+    print("Time taken: {} seconds".format(elapsed_time(time_start)))
     print("Final board:")
     print_crossword_board(final_board)
