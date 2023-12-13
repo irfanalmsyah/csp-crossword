@@ -1,8 +1,12 @@
 import random
 import time
 import copy
-from solver import *
-
+from solver import create_variables
+from solver import create_arc
+from solver import arc_consistency_3
+from solver import select_unassigned_variable
+from solver import satisfy_constraint
+from solver import read_file
 TIME_LIMIT_SECONDS = 1
 
 
@@ -123,8 +127,19 @@ def add_word_to_board(board, length, position):
     direction = "horizontal" if position % 2 == 0 else "vertical"
 
     for _ in range(max_attempts):
-        i, j = random.choice([(x, y) for x in range(len(board)) for y in range(len(board[0]) - length + 1)]
-                             ) if direction == "horizontal" else random.choice([(x, y) for x in range(len(board) - length + 1) for y in range(len(board[0]))])
+        if direction == "horizontal":
+            choices = [
+                (x, y)
+                for x in range(len(board))
+                for y in range(len(board[0]) - length + 1)
+            ]
+        else:
+            choices = [
+                (x, y)
+                for x in range(len(board) - length + 1)
+                for y in range(len(board[0]))
+            ]
+        i, j = random.choice(choices)
 
         if is_valid_placement(board, length, i, j, direction):
             if direction == "horizontal":
@@ -146,19 +161,18 @@ if __name__ == "__main__":
     height = 15
     width = 15
     max_attempts = 10
+    words = read_file("words.txt").splitlines()
 
     time_start = time.time()
 
     testing_board = generate_crossword_board(height, width)
-    
-    #if board height and width is less than 3, then give a board with all -'s
+
     if height <= 3 and width <= 3:
         for i in range(height):
             for j in range(width):
                 testing_board[i][j] = '-'
         save_board(testing_board)
         exit()
-        
 
     while True:
         word_length = random.randint(1, min(height, width))
@@ -166,19 +180,15 @@ if __name__ == "__main__":
         final_board = copy.deepcopy(testing_board)
         add_word_to_board(testing_board, word_length, choice)
 
-        # If the board is not solveable, revert back to the old board
-        if not is_solveable(testing_board, read_file("words.txt").splitlines()):
-            # try adding the word for 10 times
+        if not is_solveable(testing_board, words):
             for _ in range(max_attempts):
                 testing_board = copy.deepcopy(final_board)
                 add_word_to_board(testing_board, word_length, choice)
-                if is_solveable(testing_board, read_file("words.txt").splitlines()):
+                if is_solveable(testing_board, words):
                     break
             else:
-                # Save the board and break the loop if not solveable after 5 attempts
                 save_board(final_board)
                 break
-
 
     print("Time taken: {} seconds".format(elapsed_time(time_start)))
     print("Final board:")
