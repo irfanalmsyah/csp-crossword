@@ -74,7 +74,7 @@ class Variable:
         self.row = row
         self.col = col
         self.length = length
-        self.domain = domain
+        self.domain = set(domain)
         self.removed_domain = {}
 
 
@@ -156,12 +156,14 @@ def reduce_domain(V, assignment, Vx, val):
     for v in V:
         Cxv = create_constraint(Vx, v)
         if v != Vx and v not in assignment and Cxv:
+            elements_to_remove = set()
             for word in v.domain:
                 if val[Cxv[0]] != word[Cxv[1]]:
-                    v.domain.remove(word)
-                    if v not in Vx.removed_domain:
-                        Vx.removed_domain[v] = []
-                    Vx.removed_domain[v].append(word)
+                    elements_to_remove.add(word)
+            v.domain.difference_update(elements_to_remove)
+            if v not in Vx.removed_domain:
+                Vx.removed_domain[v] = []
+            Vx.removed_domain[v].extend(elements_to_remove)
 
 
 def restore_domain(V, assignment, Vx, val):
@@ -171,8 +173,8 @@ def restore_domain(V, assignment, Vx, val):
             if v in Vx.removed_domain:
                 for word in Vx.removed_domain[v]:
                     if val[Cxv[0]] != word[Cxv[1]]:
-                        v.domain.append(word)
-                        Vx.removed_domain[v].remove(word)
+                        v.domain.add(word)
+                Vx.removed_domain[v] = []
 
 
 def backtrack(V, assignment):
@@ -196,18 +198,21 @@ def backtrack(V, assignment):
 def revise(Vx, Vy, Cxy):
     if not Cxy:
         return False
+
     revised = False
+    elements_to_remove = set()
+
     for x in Vx.domain:
         satisfied = False
         for y in Vy.domain:
             if x[Cxy[0]] == y[Cxy[1]]:
                 satisfied = True
                 break
-            if satisfied:
-                break
         if not satisfied:
-            Vx.domain.remove(x)
+            elements_to_remove.add(x)
             revised = True
+
+    Vx.domain.difference_update(elements_to_remove)
     return revised
 
 
