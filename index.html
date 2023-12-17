@@ -106,6 +106,14 @@
           <label class="input-group-text mb-4" for="wordList">Word List:</label>
           <textarea class="form-control mb-4" id="word-list" rows="4" cols="50"></textarea>
         </div>
+        <div class="mt-3">
+          <div class="row">
+            <div class="col-3">
+              <label for="occupancy" class="form-label" id="occupancy-label">Occupancy: 50%</label>
+              <label for="occupancy" class="form-label">the lower the faster</label>
+              <input type="range" class="form-range" id="occupancy" onchange="occupancyChange()" value="50">
+            </div>
+          </div>
           <button class="btn btn-primary" onclick="create()">Create</button>
           <button class="btn btn-secondary" py-click="generate()">Generate</button>
           <button class="btn btn-success" py-click="solve()">Solve</button>
@@ -221,7 +229,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
         const textarea = document.getElementById('word-list');
-
+        occupancyChange();
         fetch('words.txt') // Replace 'path/to/your/file.txt' with the actual path to your file
             .then(response => response.text())
             .then(data => {
@@ -230,6 +238,7 @@
             .catch(error => {
                 console.error('Error loading file:', error);
             });
+        
     });
     function create() {
       const table = document.getElementById("tableContainer");
@@ -256,6 +265,10 @@
           cell.innerHTML = "#";
           cell.className = "black";
       }
+    }
+    function occupancyChange() {
+      const occupancy = document.getElementById("occupancy").value;
+      document.getElementById("occupancy-label").innerHTML = "Occupancy: " + occupancy + "%";
     }
   </script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>

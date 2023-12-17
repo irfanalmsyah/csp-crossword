@@ -413,9 +413,23 @@ def add_word_to_board(board, length, position):
             break
 
 
+def find_occupancy(board):
+    white = 0
+    black = 0
+    for row in board:
+        for c in row:
+            if c == '-':
+                white += 1
+            else:
+                black += 1
+    return white / (white + black)
+
+
 def generator(height, width):
     max_attempts = 10
     wordlist = wordlistEl.value.splitlines()
+    occupancy = document.getElementById("occupancy").value
+    occupancy = float(occupancy) / 100
     # #if board height and width is less than 3, then give a board with all -'s
     if height <= 3 and width <= 3:
         board = [['-' for _ in range(width)] for _ in range(height)]
@@ -437,7 +451,9 @@ def generator(height, width):
                 if is_solveable(testing_board, wordlist):
                     break
             else:
-                # Save the board and break the loop if not solveable after 5 attempts
-                break
+                if find_occupancy(testing_board) < occupancy:
+                    continue
+                else:
+                    break
 
     return final_board
