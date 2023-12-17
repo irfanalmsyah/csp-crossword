@@ -414,7 +414,6 @@ def add_word_to_board(board, length, position):
 
 
 def generator(height, width):
-    print("Generating board...")
     max_attempts = 10
     wordlist = wordlistEl.value.splitlines()
     # #if board height and width is less than 3, then give a board with all -'s
@@ -426,7 +425,6 @@ def generator(height, width):
 
     while True:
         word_length = random.randint(1, min(height, width))
-        print("Trying to add a word...")
         choice = random.randint(1, 2)  # vertical or horizontal
         final_board = copy.deepcopy(testing_board)
         add_word_to_board(testing_board, word_length, choice)
