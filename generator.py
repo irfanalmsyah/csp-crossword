@@ -157,6 +157,18 @@ def save_board(board):
                 file.write("\n")
 
 
+def occupancy(board):
+    white = 0
+    black = 0
+    for row in board:
+        for c in row:
+            if c == '-':
+                white += 1
+            else:
+                black += 1
+    return white / (white + black)
+
+
 if __name__ == "__main__":
     height = 15
     width = 15
@@ -187,6 +199,9 @@ if __name__ == "__main__":
                 if is_solveable(testing_board, words):
                     break
             else:
+                if occupancy(final_board) < 0.5:
+                    testing_board = generate_crossword_board(height, width)
+                    continue
                 save_board(final_board)
                 break
 
