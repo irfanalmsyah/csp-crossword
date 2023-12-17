@@ -10,7 +10,7 @@ init = document.getElementById("init")
 input = document.getElementById("input")
 init.innerHTML = "Enter the desired columns and rows!"
 input.style.display = ""
-wordlist = document.getElementById("word-list").value
+wordlistEl = document.getElementById("word-list")
 table = document.getElementById("tableContainer")
 
 
@@ -37,7 +37,7 @@ def generate():
 def solve():
     assignment = {}
     boardstr = html_table_to_list(table.innerHTML)
-    words = wordlist.splitlines()
+    words = wordlistEl.value.splitlines()
     words = [word.upper() for word in words]
 
     V = create_variables(boardstr, words)
@@ -416,7 +416,7 @@ def add_word_to_board(board, length, position):
 def generator(height, width):
     print("Generating board...")
     max_attempts = 10
-
+    wordlist = wordlistEl.value.splitlines()
     # #if board height and width is less than 3, then give a board with all -'s
     if height <= 3 and width <= 3:
         board = [['-' for _ in range(width)] for _ in range(height)]
@@ -431,12 +431,12 @@ def generator(height, width):
         final_board = copy.deepcopy(testing_board)
         add_word_to_board(testing_board, word_length, choice)
 
-        if not is_solveable(testing_board, wordlist.splitlines()):
+        if not is_solveable(testing_board, wordlist):
             # try adding the word for 10 times
             for _ in range(max_attempts):
                 testing_board = copy.deepcopy(final_board)
                 add_word_to_board(testing_board, word_length, choice)
-                if is_solveable(testing_board, wordlist.splitlines()):
+                if is_solveable(testing_board, wordlist):
                     break
             else:
                 # Save the board and break the loop if not solveable after 5 attempts
